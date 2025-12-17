@@ -1,0 +1,56 @@
+# 🎬 Movie Rating Prediction — Student Version
+# Goal: Predict movie ratings using regression techniques in Python
+
+# Step 1: 📚 Import the libraries we need
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+
+# Step 2: 🚀 Load the dataset
+print("Step 2: Loading movie dataset...")
+# You can replace this with your own dataset path if needed
+url = "https://raw.githubusercontent.com/krishnaik06/Movie-Data/master/movie_dataset.csv"
+df = pd.read_csv(url)
+print("✅ Dataset loaded successfully!")
+
+# Step 3: 🧹 Clean and prepare the data
+print("Step 3: Cleaning and preparing data...")
+# Remove rows where the target (Rating) is missing
+df = df.dropna(subset=['Rating'])
+
+# Select important features for prediction
+df = df[['Genre', 'Director', 'Runtime (Minutes)', 'Revenue (Millions)', 'Rating']]
+
+# Fill missing values in numeric columns with median values
+df['Runtime (Minutes)'].fillna(df['Runtime (Minutes)'].median(), inplace=True)
+df['Revenue (Millions)'].fillna(df['Revenue (Millions)'].median(), inplace=True)
+
+# Convert categorical features (Genre, Director) into numbers using one-hot encoding
+df_encoded = pd.get_dummies(df, columns=['Genre', 'Director'], drop_first=True)
+print("✅ Data cleaned and encoded!")
+
+# Step 4: ✂️ Split the dataset into training and testing sets
+print("Step 4: Splitting data into training and test sets...")
+X = df_encoded.drop('Rating', axis=1)  # Features (inputs)
+y = df_encoded['Rating']              # Target (output)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+print("✅ Training and test sets ready!")
+
+# Step 5: 🧠 Train the regression model
+print("Step 5: Training the Linear Regression model...")
+model = LinearRegression()
+model.fit(X_train, y_train)
+print("✅ Model training complete!")
+
+# Step 6: 📊 Test the model and check performance
+print("Step 6: Evaluating model performance...")
+y_pred = model.predict(X_test)
+
+# Calculate error and accuracy
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+
+print(f"📈 Mean Squared Error (lower is better): {mse:.2f}")
+print(f"🎯 R² Score (closer to 1 means better fit): {r2:.2f}")
+print("🎉 Done! Our model can now predict movie ratings based on features like genre and director.")
