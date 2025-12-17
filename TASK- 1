@@ -1,0 +1,45 @@
+# 🎓 Titanic Survival Prediction — Student Version
+# Goal: Predict if a passenger survived the Titanic disaster using machine learning
+
+# Step 1: 📚 Import the tools we need
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+
+# Step 2: 🚢 Load the Titanic dataset
+print("Step 2: Loading Titanic dataset...")
+url = "https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv"
+df = pd.read_csv(url)
+print("Dataset loaded! Let's explore survival chances...")
+
+# Step 3: 🧹 Clean the data (make it usable)
+print("Step 3: Cleaning data...")
+# Pick only useful columns
+df = df[['Survived', 'Pclass', 'Sex', 'Age', 'Fare']]
+
+# Convert 'Sex' into numbers (male=0, female=1)
+df['Sex'] = df['Sex'].map({'male': 0, 'female': 1})
+
+# Fill missing ages with the median age (so no blanks!)
+df['Age'].fillna(df['Age'].median(), inplace=True)
+print("Data cleaned and ready!")
+
+# Step 4: ✂️ Split into training and test sets
+print("Step 4: Splitting data...")
+X = df.drop('Survived', axis=1)  # Features (inputs)
+y = df['Survived']               # Target (output)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+print("Data split complete! Training set and test set ready.")
+
+# Step 5: 🧠 Train the model
+print("Step 5: Training Random Forest model...")
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+print("Model trained successfully!")
+
+# Step 6: 📊 Test the model
+print("Step 6: Testing model...")
+y_pred = model.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+print(f"🎉 Final Result: Our model predicts survival with {accuracy:.2f} accuracy!")
